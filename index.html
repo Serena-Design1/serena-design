@@ -167,6 +167,28 @@
   #serena-root .img-row { display:flex; gap: 8px; margin-bottom: 8px; }
   #serena-root .img-row input { flex:1; }
   #serena-root .img-row button { flex-shrink:0; width: 38px; border: 1px solid var(--line); background: var(--ivoire); border-radius: var(--radius); cursor:pointer; color:#8a3324; }
+  #serena-root .fit-choice { display:flex; flex-direction:column; gap:8px; }
+  #serena-root .fit-option { display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer; }
+  #serena-root .fit-option input { width:auto; margin:0; }
+  #serena-root .cropper { margin-top: 6px; }
+  #serena-root .crop-frame {
+    width:100%; max-width:280px; aspect-ratio:4/3; overflow:hidden; position:relative;
+    border-radius: var(--radius); border:1px solid var(--line); cursor:grab; touch-action:none; background:#DED2AE;
+  }
+  #serena-root .crop-frame:active { cursor:grabbing; }
+  #serena-root .crop-frame img { position:absolute; inset:0; width:100%; height:100%; user-select:none; -webkit-user-drag:none; }
+  #serena-root .crop-grid { position:absolute; inset:0; pointer-events:none; opacity:0; transition: opacity .15s ease; }
+  #serena-root .crop-grid.active { opacity:1; }
+  #serena-root .crop-grid .gl { position:absolute; background: rgba(255,255,255,.55); box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+  #serena-root .crop-grid .v1 { left:33.333%; top:0; bottom:0; width:1px; }
+  #serena-root .crop-grid .v2 { left:66.666%; top:0; bottom:0; width:1px; }
+  #serena-root .crop-grid .h1 { top:33.333%; left:0; right:0; height:1px; }
+  #serena-root .crop-grid .h2 { top:66.666%; left:0; right:0; height:1px; }
+  #serena-root .crop-controls { display:flex; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
+  #serena-root .crop-zoom-icon { font-family: var(--font-display); font-size:16px; color: var(--text-soft); width:14px; text-align:center; }
+  #serena-root .crop-controls input[type=range] { flex:1; min-width:120px; accent-color: var(--or-profond); }
+  #serena-root .crop-controls button { font-size:11px; padding:7px 12px; border:1px solid var(--line); background:var(--ivoire); border-radius: var(--radius); cursor:pointer; white-space:nowrap; }
+  #serena-root .crop-controls button:hover { border-color: var(--encre); }
   #serena-root .add-img-btn { margin-top: 4px; background:none; border:1px dashed var(--line); border-radius: var(--radius); padding: 9px 14px; font-size: 12.5px; color: var(--or-profond); cursor:pointer; width:100%; }
   #serena-root .add-img-btn:hover { border-color: var(--or); background: var(--ivoire); }
   #serena-root .admin-form .full.actions { display:flex; gap: 14px; align-items:center; }
@@ -271,7 +293,7 @@
   document.head.appendChild(fontLink);
 })();
 
-const { useState, useEffect, useCallback } = React;
+const { useState, useEffect, useCallback, useRef } = React;
 
 const CATEGORIES = ["Chambre", "Poufs / Chaises", "Tables", "Meuble d'entrée", "Tableaux", "Autres"];
 const ADMIN_PASSWORD = "serena2026"; // Mohamed: change this string to set your own admin password
@@ -381,6 +403,102 @@ function useProducts(){
   return { products, loaded, addProduct, updateProduct, deleteProduct };
 }
 
+function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+
+function ImageCropper({ src, crop, onChange }){
+  const frameRef = useRef(null);
+  const dragState = useRef(null);
+  const pointers = useRef(new Map());
+  const pinchState = useRef(null);
+  const [active, setActive] = useState(false);
+  const c = crop || { x:0.5, y:0.5, zoom:1 };
+
+  const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+
+  const onPointerDown = (e) => {
+    e.preventDefault();
+    const frame = frameRef.current;
+    try { frame.setPointerCapture(e.pointerId); } catch(err){}
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    setActive(true);
+
+    if (pointers.current.size === 2) {
+      const pts = Array.from(pointers.current.values());
+      pinchState.current = { startDist: dist(pts[0], pts[1]), startZoom: c.zoom };
+      dragState.current = null;
+    } else if (pointers.current.size === 1) {
+      dragState.current = { startX: e.clientX, startY: e.clientY, cx: c.x, cy: c.y, w: frame.clientWidth, h: frame.clientHeight };
+      pinchState.current = null;
+    }
+  };
+  const onPointerMove = (e) => {
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+    if (pointers.current.size === 2 && pinchState.current) {
+      const pts = Array.from(pointers.current.values());
+      const newDist = dist(pts[0], pts[1]);
+      const ratio = newDist / (pinchState.current.startDist || 1);
+      const newZoom = clamp(pinchState.current.startZoom * ratio, 1, 3);
+      onChange({ ...c, zoom: newZoom });
+    } else if (dragState.current) {
+      const { startX, startY, cx, cy, w, h } = dragState.current;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const nx = clamp(cx - dx / (w * c.zoom), 0, 1);
+      const ny = clamp(cy - dy / (h * c.zoom), 0, 1);
+      onChange({ ...c, x: nx, y: ny });
+    }
+  };
+  const endPointer = (e) => {
+    pointers.current.delete(e.pointerId);
+    try { frameRef.current.releasePointerCapture(e.pointerId); } catch(err){}
+    if (pointers.current.size === 0) {
+      dragState.current = null; pinchState.current = null; setActive(false);
+    } else if (pointers.current.size === 1) {
+      const [[id, p]] = Array.from(pointers.current.entries());
+      dragState.current = { startX: p.x, startY: p.y, cx: c.x, cy: c.y, w: frameRef.current.clientWidth, h: frameRef.current.clientHeight };
+      pinchState.current = null;
+    }
+  };
+  const onWheel = (e) => {
+    e.preventDefault();
+    const newZoom = clamp(c.zoom - e.deltaY * 0.0015, 1, 3);
+    onChange({ ...c, zoom: newZoom });
+  };
+
+  return React.createElement('div', {className:'cropper'},
+    React.createElement('div', {
+      className:'crop-frame', ref: frameRef,
+      onPointerDown, onPointerMove, onPointerUp: endPointer, onPointerCancel: endPointer, onWheel
+    },
+      React.createElement('img', {
+        src, alt:'', draggable:false,
+        style: {
+          objectFit:'cover',
+          objectPosition: (c.x*100)+'% '+(c.y*100)+'%',
+          transform: 'scale(' + c.zoom + ')',
+          transformOrigin: (c.x*100)+'% '+(c.y*100)+'%'
+        }
+      }),
+      React.createElement('div', {className:'crop-grid' + (active ? ' active' : '')},
+        React.createElement('div', {className:'gl v1'}), React.createElement('div', {className:'gl v2'}),
+        React.createElement('div', {className:'gl h1'}), React.createElement('div', {className:'gl h2'})
+      )
+    ),
+    React.createElement('div', {className:'crop-controls'},
+      React.createElement('span', {className:'crop-zoom-icon'}, '−'),
+      React.createElement('input', {
+        type:'range', min:1, max:3, step:0.01, value:c.zoom,
+        onChange: (e) => onChange({...c, zoom: parseFloat(e.target.value)})
+      }),
+      React.createElement('span', {className:'crop-zoom-icon'}, '+'),
+      React.createElement('button', {type:'button', onClick: () => onChange({x:0.5,y:0.5,zoom:1})}, 'Réinitialiser')
+    ),
+    React.createElement('div', {className:'hint'}, 'Glisse pour repositionner · molette, pincement ou curseur pour zoomer')
+  );
+}
+
 function ProductModal({ product, onClose }){
   const images = getImages(product);
   const [idx, setIdx] = useState(0);
@@ -422,7 +540,18 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, index }){
   return React.createElement('div', {className:'card', style:{animationDelay: (index*0.04)+'s'}},
     React.createElement('div', {className:'thumb' + (images.length ? '' : ' empty'), onClick: () => onOpen && onOpen(product)},
       images.length
-        ? React.createElement('img', {src: images[0], alt: product.name, onError: (e)=>{ e.target.style.display='none'; }})
+        ? React.createElement('img', {
+            src: images[0], alt: product.name,
+            style: product.fit === 'contain'
+              ? { objectFit:'contain' }
+              : {
+                  objectFit:'cover',
+                  objectPosition: product.crop ? (product.crop.x*100)+'% '+(product.crop.y*100)+'%' : '50% 50%',
+                  transform: product.crop && product.crop.zoom > 1 ? 'scale('+product.crop.zoom+')' : undefined,
+                  transformOrigin: product.crop ? (product.crop.x*100)+'% '+(product.crop.y*100)+'%' : undefined
+                },
+            onError: (e)=>{ e.target.style.display='none'; }
+          })
         : React.createElement('span', null, 'Photo à venir'),
       images.length > 1 ? React.createElement('span', {className:'count-badge'}, '+' + (images.length - 1)) : null
     ),
@@ -443,7 +572,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, index }){
 }
 
 function AdminForm({ onSave, editing, onCancelEdit }){
-  const blank = { name:'', category: CATEGORIES[0], price:'', desc:'', images: [''] };
+  const blank = { name:'', category: CATEGORIES[0], price:'', desc:'', images: [''], fit: 'cover', crop: { x:0.5, y:0.5, zoom:1 } };
   const [form, setForm] = useState(blank);
   const [msg, setMsg] = useState('');
 
@@ -452,7 +581,8 @@ function AdminForm({ onSave, editing, onCancelEdit }){
       const imgs = getImages(editing);
       setForm({
         name: editing.name, category: editing.category, price: editing.price, desc: editing.desc || '',
-        images: imgs.length ? imgs : ['']
+        images: imgs.length ? imgs : [''], fit: editing.fit === 'contain' ? 'contain' : 'cover',
+        crop: editing.crop || { x:0.5, y:0.5, zoom:1 }
       });
     } else setForm(blank);
   }, [editing]);
@@ -460,10 +590,12 @@ function AdminForm({ onSave, editing, onCancelEdit }){
   const set = (k) => (e) => setForm(f => ({...f, [k]: e.target.value}));
 
   const setImageAt = (i) => (e) => {
+    const val = e.target.value;
     setForm(f => {
       const images = [...f.images];
-      images[i] = e.target.value;
-      return {...f, images};
+      images[i] = val;
+      const crop = i === 0 ? { x:0.5, y:0.5, zoom:1 } : f.crop;
+      return {...f, images, crop};
     });
   };
   const addImageField = () => setForm(f => ({...f, images: [...f.images, '']}));
@@ -476,7 +608,7 @@ function AdminForm({ onSave, editing, onCancelEdit }){
     e.preventDefault();
     if (!form.name.trim()) { setMsg("Le nom de l'article est obligatoire."); return; }
     const images = form.images.map(s => s.trim()).filter(Boolean);
-    onSave({ name: form.name, category: form.category, price: form.price, desc: form.desc, images });
+    onSave({ name: form.name, category: form.category, price: form.price, desc: form.desc, images, fit: form.fit, crop: form.crop });
     setMsg(editing ? 'Article mis à jour.' : 'Article ajouté au catalogue.');
     setForm(blank);
     setTimeout(() => setMsg(''), 2500);
@@ -506,6 +638,28 @@ function AdminForm({ onSave, editing, onCancelEdit }){
       React.createElement('button', {type:'button', className:'add-img-btn', onClick: addImageField}, '+ Ajouter une photo'),
       React.createElement('div', {className:'hint'}, 'Ajoute autant de photos que tu veux. Les visiteurs pourront cliquer sur l\u2019article pour toutes les voir en grand.')
     ),
+    React.createElement('div', {className:'field full'},
+      React.createElement('label', null, 'Affichage de la photo dans le catalogue'),
+      React.createElement('div', {className:'fit-choice'},
+        React.createElement('label', {className:'fit-option'},
+          React.createElement('input', {type:'radio', name:'fit', value:'cover', checked: form.fit !== 'contain', onChange: () => setForm(f => ({...f, fit:'cover'}))}),
+          React.createElement('span', null, 'Remplir la vignette (peut légèrement recadrer)')
+        ),
+        React.createElement('label', {className:'fit-option'},
+          React.createElement('input', {type:'radio', name:'fit', value:'contain', checked: form.fit === 'contain', onChange: () => setForm(f => ({...f, fit:'contain'}))}),
+          React.createElement('span', null, 'Montrer la photo entière (sans recadrage)')
+        )
+      ),
+      React.createElement('div', {className:'hint'}, 'Choisis "photo entière" si le recadrage coupe des éléments importants (ex: plusieurs meubles côte à côte, un tableau complet).')
+    ),
+    (form.fit !== 'contain' && form.images[0] && form.images[0].trim()) ? React.createElement('div', {className:'field full'},
+      React.createElement('label', null, 'Cadrer la photo principale (miniature du catalogue)'),
+      React.createElement(ImageCropper, {
+        src: form.images[0],
+        crop: form.crop,
+        onChange: (crop) => setForm(f => ({...f, crop}))
+      })
+    ) : null,
     React.createElement('div', {className:'field full'},
       React.createElement('label', null, 'Description courte'),
       React.createElement('textarea', {value: form.desc, onChange: set('desc'), placeholder: 'Matériaux, finition, couleur...'})
