@@ -992,6 +992,14 @@ function LoginBox({ onSuccess, onCancel }){
 
 function Site(){
   const { products, loaded, addProduct, updateProduct, deleteProduct } = useProducts();
+  useEffect(() => {
+  if (!loaded) return;
+  const pid = new URLSearchParams(window.location.search).get('p');
+  if (pid) {
+    const found = products.find(pr => pr.id === pid);
+    if (found) setOpenProduct(found);
+  }
+}, [loaded, products]);
   const { orders, loaded: ordersLoaded, addOrder } = useOrders();
   const [view, setView] = useState('site'); // site | login | admin
   const [filter, setFilter] = useState('Tous');
