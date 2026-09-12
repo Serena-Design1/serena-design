@@ -762,7 +762,6 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, onBuy, index 
         React.createElement('a', {className:'wa-btn', href: telLink(), onClick: (e) => e.stopPropagation()}, 'Appeler'),
         React.createElement('button', {className:'wa-btn', onClick: (e) => { e.stopPropagation(); onBuy && onBuy(product); }}, 'Acheter')
       ),
-      ),
       isAdmin ? React.createElement('div', {className:'admin-row'},
         React.createElement('button', {onClick: () => onEdit(product)}, 'Modifier'),
         React.createElement('button', {className:'danger', onClick: () => onDelete(product.id)}, 'Supprimer')
