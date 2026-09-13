@@ -1,4 +1,1 @@
-User-agent: *
-Allow: /
-
-Sitemap: SITE_URLsitemap.xml
+User-agent: * Allow: / Sitemap: https://serenadesign.tn/sitemap.xml
