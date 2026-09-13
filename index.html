@@ -691,8 +691,8 @@ function OrderModal({ product, onClose, addOrder }){
 
   const submit = (e) => {
     e.preventDefault();
-    if (!name.trim() || !phone.trim()) { setErr('Le nom et le téléphone sont obligatoires.'); return; }
-    addOrder({ productId: product.id, productName: product.name, name: name.trim(), phone: phone.trim(), email: email.trim() });
+    if (!name.trim() || !phone.trim() || !address.trim()) { setErr('Le nom, le téléphone et l\'adresse sont obligatoires.'); return; }
+addOrder({ productId: product.id, productName: product.name, name: name.trim(), phone: phone.trim(), address: address.trim() });
     setSent(true);
   };
 
