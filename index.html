@@ -146,6 +146,8 @@
     overflow:hidden; display:flex; flex-direction:column; opacity:0; transform: translateY(10px);
     animation: rise .5s ease forwards;
   }
+  #serena-root .card { transition: transform .25s ease, box-shadow .25s ease; }
+  #serena-root .card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(23,18,14,.10); }
   @keyframes rise { to { opacity:1; transform:none; } }
   #serena-root .card .thumb { aspect-ratio: 4/3; background: #DED2AE; display:flex; align-items:center; justify-content:center; overflow:hidden; cursor: pointer; position:relative; }
   #serena-root .card .thumb img { width:100%; height:100%; object-fit: cover; transition: transform .35s ease; }
