@@ -720,8 +720,8 @@ addOrder({ productId: product.id, productName: product.name, name: name.trim(), 
                   React.createElement('input', {value:phone, onChange:e=>setPhone(e.target.value), placeholder:'Ex: 12345678', required:true})
                 ),
                 React.createElement('div', {className:'field'},
-                  React.createElement('label', null, 'Email (facultatif)'),
-                  React.createElement('input', {type:'email', value:email, onChange:e=>setEmail(e.target.value), placeholder:'vous@exemple.com'})
+                  React.createElement('label', null, 'Adresse'),
+                  React.createElement('input', {type:'text', value:address, onChange:e=>setAddress(e.target.value), placeholder:'Votre adresse de livraison', required:true})
                 ),
                 err ? React.createElement('div', {className:'login-error'}, err) : null,
                 React.createElement('button', {className:'btn', type:'submit'}, 'Acheter')
