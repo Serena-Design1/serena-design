@@ -243,5 +243,19 @@ Son grand miroir rond avec éclairage LED intégré offre une lumière douce et 
       <g:brand>Serena Design</g:brand>
       <g:product_type>Meuble d&apos;entrée</g:product_type>
     </item>
+
+    <item>
+      <g:id>p_1789379996802_37xtzg</g:id>
+      <title>Meuble TV Amora</title>
+      <description>Meuble TV Alora — Élégance minimaliste et design moderne pour sublimer votre salon. ✨</description>
+      <link>https://serenadesign.tn/?p=p_1789379996802_37xtzg</link>
+      <g:image_link>https://i.ibb.co/prvPrHLV/8ee86c6f588036b53b058e2d9cdf8241.jpg</g:image_link>
+      
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>1200.00 TND</g:price>
+      <g:brand>Serena Design</g:brand>
+      <g:product_type>Autres</g:product_type>
+    </item>
 </channel>
 </rss>
