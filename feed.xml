@@ -258,5 +258,34 @@ Son grand miroir rond avec éclairage LED intégré offre une lumière douce et 
       <g:brand>Serena Design</g:brand>
       <g:product_type>Meuble d&apos;entrée</g:product_type>
     </item>
+
+    <item>
+      <g:id>p_1789432398211_rvnr1x</g:id>
+      <title>Pouf Sculptural</title>
+      <description>Pouf sculptural au design contemporain, habillé d&apos;un tissu bouclette ivoire ultra-doux. Avec ses formes généreuses et son style minimaliste, il sert d&apos;assise d&apos;appoint élégante ou de repose-pieds cosy pour un salon moderne.</description>
+      <link>https://serenadesign.tn/?p=p_1789432398211_rvnr1x</link>
+      <g:image_link>https://i.ibb.co/SDLmsDxh/p6.jpg</g:image_link>
+      
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>350.00 TND</g:price>
+      <g:brand>Serena Design</g:brand>
+      <g:product_type>Poufs / Chaises</g:product_type>
+    </item>
+
+    <item>
+      <g:id>p_1789432556307_7hjii8</g:id>
+      <title>Banc Sculptural Pebble</title>
+      <description>Banc sculptural aux lignes organiques fluides, sublimé par un tissu bouclette ivoire chaleureux.
+Pièce maîtresse moderne et élégante, idéale comme assise centrale ou table basse textile.</description>
+      <link>https://serenadesign.tn/?p=p_1789432556307_7hjii8</link>
+      <g:image_link>https://i.ibb.co/Df7V1S4q/p5.jpg</g:image_link>
+      
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>650.00 TND</g:price>
+      <g:brand>Serena Design</g:brand>
+      <g:product_type>Poufs / Chaises</g:product_type>
+    </item>
 </channel>
 </rss>
