@@ -93,6 +93,45 @@
   #serena-root nav.main-nav button:hover, #serena-root nav.main-nav button.active { border-bottom-color: var(--or); color: var(--or-profond); }
   #serena-root nav.main-nav button:focus-visible { outline: 2px solid var(--or); outline-offset: 3px; }
 
+  #serena-root .head-social { display:flex; align-items:center; gap: 18px; }
+  #serena-root .social-ico { color: var(--encre); display:inline-flex; transition: color .18s ease, transform .18s ease; }
+  #serena-root .social-ico svg { width: 24px; height: 24px; }
+  #serena-root .social-ico:hover { color: var(--or); transform: translateY(-1px); }
+  #serena-root .social-ico:focus-visible { outline: 2px solid var(--or); outline-offset: 3px; }
+
+  /* floating search */
+  #serena-root .site-search { position: fixed; top: 96px; left: 22px; z-index: 45; }
+  #serena-root .search-fab {
+    width: 46px; height: 46px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+    background: rgba(243,236,220,0.95); backdrop-filter: blur(6px); border: 1px solid var(--line); color: var(--or-profond);
+    cursor: pointer; box-shadow: 0 4px 14px rgba(36,28,20,0.12); transition: all .18s ease;
+  }
+  #serena-root .search-fab:hover { color: var(--or); border-color: var(--or); transform: scale(1.05); }
+  #serena-root .site-search.is-open .search-fab { color: var(--ivoire); background: var(--encre); border-color: var(--encre); }
+  #serena-root .search-panel {
+    position: absolute; top: 54px; left: 0; width: 280px; background: var(--ivoire); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: 0 12px 30px rgba(36,28,20,0.16); padding: 12px; animation: sdFadeIn .15s ease;
+  }
+  #serena-root .search-panel input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font-family: var(--font-body);
+    font-size: 14px; background: #fff; color: var(--encre);
+  }
+  #serena-root .search-panel input:focus { outline: none; border-color: var(--or); }
+  #serena-root .search-results { list-style:none; margin: 10px 0 0; padding: 0; max-height: 260px; overflow-y: auto; }
+  #serena-root .search-results li {
+    display:flex; justify-content:space-between; align-items:center; gap: 10px; padding: 9px 6px; cursor: pointer;
+    border-bottom: 1px solid var(--line); font-size: 13.5px; color: var(--encre); transition: background .15s ease;
+  }
+  #serena-root .search-results li:last-child { border-bottom: none; }
+  #serena-root .search-results li:hover { background: rgba(199,166,98,0.12); }
+  #serena-root .search-results .sr-cat { font-size: 11px; letter-spacing:.04em; color: var(--or-profond); text-transform: uppercase; }
+  #serena-root .search-empty { margin: 10px 0 0; font-size: 13px; color: var(--gris, #8a8072); text-align:center; }
+  @keyframes sdFadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+  @media (max-width: 640px) {
+    #serena-root .site-search { top: 80px; left: 14px; }
+    #serena-root .search-panel { width: calc(100vw - 60px); max-width: 300px; }
+  }
+
   /* buttons */
   #serena-root .btn {
     display:inline-flex; align-items:center; gap:8px; padding: 13px 24px; border-radius: var(--radius);
@@ -993,6 +1032,66 @@ function LoginBox({ onSuccess, onCancel }){
   );
 }
 
+function SearchWidget({ products, onSelect }){
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState('');
+  const inputRef = useRef(null);
+  const boxRef = useRef(null);
+
+  useEffect(() => {
+    if (open && inputRef.current) inputRef.current.focus();
+  }, [open]);
+
+  useEffect(() => {
+    function onKey(e){ if (e.key === 'Escape') { setOpen(false); setQ(''); } }
+    function onClickOutside(e){ if (boxRef.current && !boxRef.current.contains(e.target)) { setOpen(false); } }
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClickOutside);
+    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('mousedown', onClickOutside); };
+  }, []);
+
+  const query = q.trim().toLowerCase();
+  const matches = query ? products.map(p => {
+    const name = (p.name || '').toLowerCase();
+    const cat = (p.category || '').toLowerCase();
+    const desc = (p.desc || '').toLowerCase();
+    let score = -1;
+    if (name.includes(query)) score = name.indexOf(query);
+    else if (cat.includes(query)) score = 1000 + cat.indexOf(query);
+    else if (desc.includes(query)) score = 2000 + desc.indexOf(query);
+    return { p, score };
+  }).filter(x => x.score > -1).sort((a, b) => a.score - b.score).slice(0, 6).map(x => x.p) : [];
+
+  function go(p){ onSelect(p); setOpen(false); setQ(''); }
+  function onSubmit(e){ e.preventDefault(); if (matches[0]) go(matches[0]); }
+
+  return React.createElement('div', { className: 'site-search' + (open ? ' is-open' : ''), ref: boxRef },
+    React.createElement('button', {
+      className: 'search-fab', 'aria-label': 'Rechercher', type: 'button',
+      onClick: () => setOpen(o => !o)
+    },
+      React.createElement('svg', { viewBox: '0 0 24 24', width: 26, height: 26, fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' },
+        React.createElement('circle', { cx: 11, cy: 11, r: 7 }),
+        React.createElement('line', { x1: 16.2, y1: 16.2, x2: 21, y2: 21 })
+      )
+    ),
+    open ? React.createElement('div', { className: 'search-panel' },
+      React.createElement('form', { onSubmit },
+        React.createElement('input', {
+          ref: inputRef, type: 'text', value: q, placeholder: 'Rechercher un article…',
+          onChange: e => setQ(e.target.value)
+        })
+      ),
+      query ? (matches.length ? React.createElement('ul', { className: 'search-results' },
+        matches.map(p => React.createElement('li', { key: p.id, onClick: () => go(p) },
+          React.createElement('span', { className: 'sr-name' }, p.name),
+          React.createElement('span', { className: 'sr-cat' }, p.category)
+        ))
+      ) : React.createElement('p', { className: 'search-empty' }, 'Aucun résultat')) : null
+    ) : null
+  );
+}
+
 function Site(){
   const { products, loaded, addProduct, updateProduct, deleteProduct } = useProducts();
   useEffect(() => {
@@ -1017,6 +1116,7 @@ function Site(){
   return React.createElement(React.Fragment, null,
         openProduct ? React.createElement(ProductModal, { product: openProduct, onClose: () => setOpenProduct(null), onBuy: (p) => { setOpenProduct(null); setBuyProduct(p); } }) : null,
     buyProduct ? React.createElement(OrderModal, { product: buyProduct, onClose: () => setBuyProduct(null), addOrder }) : null,
+    React.createElement(SearchWidget, { products, onSelect: (p) => setOpenProduct(p) }),
 
     React.createElement('header', {className:'site-head'},
       React.createElement('div', {className:'wrap head-row'},
@@ -1028,6 +1128,25 @@ function Site(){
           React.createElement('button', {onClick: () => document.getElementById('sd-catalogue').scrollIntoView({behavior:'smooth'})}, 'Catalogue'),
           React.createElement('button', {onClick: () => document.getElementById('sd-process').scrollIntoView({behavior:'smooth'})}, 'Savoir-faire'),
           React.createElement('button', {onClick: () => document.getElementById('sd-about').scrollIntoView({behavior:'smooth'})}, 'À propos'),
+        ),
+        React.createElement('div', {className:'head-social'},
+          React.createElement('a', {href: INSTAGRAM_URL, target:'_blank', rel:'noopener noreferrer', 'aria-label':'Instagram', className:'social-ico'},
+            React.createElement('svg', {viewBox:'0 0 24 24', width:24, height:24, fill:'none', stroke:'currentColor', strokeWidth:1.6},
+              React.createElement('rect', {x:3, y:3, width:18, height:18, rx:5}),
+              React.createElement('circle', {cx:12, cy:12, r:4}),
+              React.createElement('circle', {cx:17.3, cy:6.7, r:1})
+            )
+          ),
+          React.createElement('a', {href: FACEBOOK_URL, target:'_blank', rel:'noopener noreferrer', 'aria-label':'Facebook', className:'social-ico'},
+            React.createElement('svg', {viewBox:'0 0 24 24', width:24, height:24, fill:'currentColor'},
+              React.createElement('path', {d:'M13.5 21v-7.8h2.6l.4-3h-3v-1.9c0-.87.24-1.46 1.5-1.46h1.6V4.14C15.9 4.06 15 4 13.94 4 11.7 4 10.2 5.35 10.2 7.9v2.3H7.6v3h2.6V21h3.3z'})
+            )
+          ),
+          React.createElement('a', {href: 'tel:+21625134883', 'aria-label':'Appeler', className:'social-ico'},
+            React.createElement('svg', {viewBox:'0 0 24 24', width:24, height:24, fill:'none', stroke:'currentColor', strokeWidth:1.6, strokeLinecap:'round', strokeLinejoin:'round'},
+              React.createElement('path', {d:'M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z'})
+            )
+          )
         ),
         React.createElement('a', {className:'btn', href: waLink('votre maison'), target:'_blank', rel:'noopener noreferrer'}, 'WhatsApp')
       )
