@@ -287,5 +287,23 @@ Pièce maîtresse moderne et élégante, idéale comme assise centrale ou table 
       <g:brand>Serena Design</g:brand>
       <g:product_type>Poufs / Chaises</g:product_type>
     </item>
+
+    <item>
+      <g:id>p_1790277017125_e6h1me</g:id>
+      <title>Coiffeuse Lora</title>
+      <description>✨ Offrez une touche de luxe à votre chambre ! 🤍
+💄 Coiffeuse avec miroir</description>
+      <link>https://serenadesign.tn/?p=p_1790277017125_e6h1me</link>
+      <g:image_link>https://i.ibb.co/YBj3vCTq/IMG-5311.jpg</g:image_link>
+      <g:additional_image_link>https://i.ibb.co/HfT8Wd4y/IMG-5312.jpg</g:additional_image_link>
+      <g:additional_image_link>https://i.ibb.co/zVS18NB3/IMG-5313.jpg</g:additional_image_link>
+      <g:additional_image_link>https://i.ibb.co/Fb5CPgxJ/IMG-5314.jpg</g:additional_image_link>
+      <g:additional_image_link>https://i.ibb.co/7NtTBvcd/IMG-5315.jpg</g:additional_image_link>
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>390.00 TND</g:price>
+      <g:brand>Serena Design</g:brand>
+      <g:product_type>Chambre</g:product_type>
+    </item>
 </channel>
 </rss>
