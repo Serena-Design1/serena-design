@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17120E">
 <title>Serena Design — Meubles et décoration en Tunisie</title>
 <meta name="description" content="Serena Design : meubles et décoration raffinés en Tunisie. Chambres, tables, poufs et chaises, meubles d'entrée, tableaux. Commande directe sur WhatsApp, livraison en Tunisie.">
 <meta name="keywords" content="meubles Tunisie, décoration Tunisie, mobilier Tunisie, meubles Sfax, table Tunisie, chambre Tunisie, décoration intérieure Tunisie, Serena Design">
@@ -404,6 +405,64 @@
     #serena-root .modal-backdrop{display:flex;align-items:flex-end;justify-content:center}
     #serena-root .modal-card{border-radius:20px 20px 0 0;animation:sheetUp .35s cubic-bezier(.2,.8,.2,1) both}
   }
+
+  /* ── Recherche à droite + en-tête mobile ── */
+  #serena-root .site-search{left:auto;right:22px}
+  #serena-root .search-panel{left:auto;right:0}
+  #serena-root #sd-catalogue, #serena-root #sd-process, #serena-root #sd-about{scroll-margin-top:72px}
+  @media (max-width:720px){
+    #serena-root .site-search{top:68px;right:14px;left:auto}
+    #serena-root .search-fab{width:42px;height:42px}
+    #serena-root .head-row{flex-wrap:nowrap;justify-content:space-between;gap:10px;padding:10px 0}
+    #serena-root header.site-head .btn{display:none}
+    #serena-root .logo{order:0;font-size:18px;gap:8px}
+    #serena-root .head-social{order:0;gap:14px}
+    #serena-root .social-ico svg{width:22px;height:22px}
+  }
+
+  /* ── Bandeau de confiance ── */
+  #serena-root .trust{background:var(--noir);border-top:1px solid var(--line-dark)}
+  #serena-root .trust-row{display:grid;grid-template-columns:repeat(3,1fr)}
+  #serena-root .trust-item{padding:20px 12px;text-align:center;border-left:1px solid var(--line-dark)}
+  #serena-root .trust-item:first-child{border-left:0}
+  #serena-root .trust-item b{display:block;font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--or)}
+  #serena-root .trust-item span{display:block;margin-top:2px;color:var(--text-soft-dark);font-size:13px}
+  @media (max-width:560px){
+    #serena-root .trust-item{padding:14px 4px}
+    #serena-root .trust-item b{font-size:15px}
+    #serena-root .trust-item span{font-size:11.5px}
+  }
+
+  /* ── Nouveautés (slider de produits) ── */
+  #serena-root .featured{padding:56px 0 8px}
+  #serena-root .featured-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:18px}
+  #serena-root .featured-head h2{font-size:30px}
+  #serena-root .featured-head button{background:none;border:0;border-bottom:1px solid var(--or);color:var(--or-profond);cursor:pointer;font:inherit;font-size:13px;padding:2px 0;white-space:nowrap}
+  #serena-root .fe-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:28px;margin:0 -28px;padding:4px 28px 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  #serena-root .fe-track::-webkit-scrollbar{display:none}
+  #serena-root .fe-item{flex:0 0 min(76vw,290px);scroll-snap-align:start;cursor:pointer}
+  #serena-root .fe-item .ph{position:relative;aspect-ratio:4/5;overflow:hidden;background:#DED2AE}
+  #serena-root .fe-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+  #serena-root .fe-item:hover img{transform:scale(1.04)}
+  #serena-root .fe-item h3{font-size:19px;margin-top:12px}
+  #serena-root .fe-item .pr{font-family:var(--font-display);font-style:italic;font-size:17px;color:var(--or-profond)}
+  @media (max-width:480px){ #serena-root .fe-track{margin:0 -16px;padding:4px 16px 20px;scroll-padding-left:16px} }
+  #serena-root .new-badge{position:absolute;top:10px;left:10px;z-index:2;background:var(--or);color:var(--noir);font-size:11px;font-weight:500;letter-spacing:.06em;padding:4px 10px}
+  #serena-root .card .thumb{position:relative}
+  #serena-root .modal-note{margin-top:10px;font-size:13px;color:var(--text-soft)}
+
+  /* ── Appel à l'action final + WhatsApp flottant ── */
+  #serena-root .cta-band{background:var(--noir);padding:76px 0;text-align:center}
+  #serena-root .cta-band h2{color:var(--ivoire);font-size:clamp(30px,6vw,44px);line-height:1.15;max-width:16ch;margin:0 auto}
+  #serena-root .cta-band p{color:var(--text-soft-dark);max-width:42ch;margin:16px auto 0;font-size:15.5px}
+  #serena-root .cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+  #serena-root .wa-float{position:fixed;right:22px;bottom:22px;z-index:30;background:var(--or);color:var(--noir);padding:13px 20px;font-size:13px;font-weight:500;letter-spacing:.06em;text-decoration:none;box-shadow:0 10px 24px rgba(23,18,14,.28);transition:background .2s,transform .2s}
+  #serena-root .wa-float:hover{background:var(--ivoire);transform:translateY(-2px)}
+  @media (max-width:720px){
+    #serena-root .wa-float{display:none}
+    #serena-root .cta-actions{flex-direction:column;align-items:stretch;padding:0 4px}
+    #serena-root .cta-actions .btn{justify-content:center}
+  }
 </style>
 <!-- Meta Pixel Code -->
 <script>
@@ -730,6 +789,33 @@ function ImageCropper({ src, crop, onChange }){
   );
 }
 
+function createdTs(p){ const m = /^p_(\d{10,})_/.exec((p && p.id) || ''); return m ? +m[1] : 0; }
+function isNew(p){ const t = createdTs(p); return !!t && (Date.now() - t) < 30 * 864e5; }
+
+function Featured({ products, onOpen, onAll }){
+  const list = products.filter(p => getImages(p).length).sort((a, b) => createdTs(b) - createdTs(a)).slice(0, 8);
+  if (list.length < 3) return null;
+  return React.createElement('section', {className:'featured'},
+    React.createElement('div', {className:'wrap'},
+      React.createElement('div', {className:'featured-head'},
+        React.createElement('h2', null, 'Nouveautés'),
+        React.createElement('button', {type:'button', onClick:onAll}, 'Voir tout le catalogue')
+      ),
+      React.createElement('div', {className:'fe-track'},
+        list.map(p => React.createElement('div', {key:p.id, className:'fe-item', onClick: () => onOpen(p)},
+          React.createElement('div', {className:'ph'},
+            React.createElement('img', {src: getImages(p)[0], alt: p.name + ' - ' + p.category + ' Serena Design Tunisie', loading:'lazy', decoding:'async',
+              style: p.crop && p.fit !== 'contain' ? { objectPosition: (p.crop.x*100)+'% '+(p.crop.y*100)+'%' } : undefined }),
+            isNew(p) ? React.createElement('span', {className:'new-badge'}, 'Nouveau') : null
+          ),
+          React.createElement('h3', null, p.name),
+          React.createElement('span', {className:'pr'}, p.price ? p.price + ' DT' : 'Sur devis')
+        ))
+      )
+    )
+  );
+}
+
 function Slider({ images, alt, crop, contain }){
   const ref = useRef(null);
   const [i, setI] = useState(0);
@@ -787,6 +873,7 @@ function ProductModal({ product, onClose, onBuy }){
         React.createElement('h2', null, product.name),
         product.desc ? React.createElement('p', {className:'desc'}, product.desc) : null,
         React.createElement('span', {className:'price'}, product.price ? product.price + ' DT' : 'Sur devis'),
+        React.createElement('p', {className:'modal-note'}, 'Livraison et installation chez vous.'),
         React.createElement('div', {style:{display:'flex', gap:'10px', flexWrap:'wrap', marginTop:'22px'}},
         React.createElement('a', {className:'btn wa-btn', style:{border:'1px solid var(--or)', background:'transparent', color:'var(--encre)'}, href: waLink(product.name), target:'_blank', rel:'noopener noreferrer'}, 'WhatsApp'),
         React.createElement('a', {className:'btn wa-btn', style:{border:'1px solid var(--or)', background:'transparent', color:'var(--encre)'}, href: telLink()}, 'Appeler'),
@@ -860,7 +947,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, onBuy, index 
         ? React.createElement(Slider, { images, alt: product.name + ' - ' + product.category + ' Serena Design Tunisie', crop: product.crop, contain: product.fit === 'contain' })
         : images.length
         ? React.createElement('img', {
-            src: images[0], alt: product.name + ' - ' + product.category + ' Serena Design Tunisie',
+            src: images[0], loading: 'lazy', decoding: 'async', alt: product.name + ' - ' + product.category + ' Serena Design Tunisie',
             style: product.fit === 'contain'
               ? { objectFit:'contain' }
               : {
@@ -872,7 +959,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, onBuy, index 
             onError: (e)=>{ e.target.style.display='none'; }
           })
         : React.createElement('span', null, 'Photo à venir'),
-      images.length > 1 ? React.createElement('span', {className:'count-badge'}, '+' + (images.length - 1)) : null
+      isNew(product) ? React.createElement('span', {className:'new-badge'}, 'Nouveau') : null
     ),
     React.createElement('div', {className:'body'},
       React.createElement('span', {className:'cat-tag'}, product.category),
@@ -1209,6 +1296,7 @@ function Site(){
       React.createElement('a', {className:'mb-wa', href: waLink('votre maison'), target:'_blank', rel:'noopener noreferrer'}, 'WhatsApp'),
       React.createElement('a', {className:'mb-call', href: telLink()}, 'Appeler')
     ),
+    React.createElement('a', {className:'wa-float', href: waLink('votre maison'), target:'_blank', rel:'noopener noreferrer'}, 'Écrire sur WhatsApp'),
 
     React.createElement('header', {className:'site-head'},
       React.createElement('div', {className:'wrap head-row'},
@@ -1262,6 +1350,14 @@ function Site(){
       )
     ),
 
+    React.createElement('div', {className:'trust'},
+      React.createElement('div', {className:'wrap trust-row'},
+        [['Atelier à Sfax','Fabriqué avec soin'],['Livraison','et installation chez vous'],['WhatsApp','Commandez en un message']].map(([t,d]) =>
+          React.createElement('div', {className:'trust-item', key:t}, React.createElement('b', null, t), React.createElement('span', null, d)))
+      )
+    ),
+    React.createElement(Featured, { products, onOpen: setOpenProduct, onAll: () => document.getElementById('sd-catalogue').scrollIntoView({behavior:'smooth'}) }),
+
     React.createElement('section', {className:'process', id:'sd-process'},
       React.createElement('div', {className:'wrap'},
         React.createElement('span', {className:'label-caps'}, 'Savoir-faire'),
@@ -1304,6 +1400,17 @@ function Site(){
       )
     ),
 
+    React.createElement('section', {className:'cta-band'},
+      React.createElement('div', {className:'wrap'},
+        React.createElement('h2', null, 'Un projet pour votre intérieur ?'),
+        React.createElement('p', null, 'Écrivez-nous sur WhatsApp avec une photo du modèle qui vous plaît, ou appelez-nous directement.'),
+        React.createElement('div', {className:'cta-actions'},
+          React.createElement('a', {className:'btn on-dark', href: waLink('un projet de mobilier'), target:'_blank', rel:'noopener noreferrer'}, 'Écrire sur WhatsApp'),
+          React.createElement('a', {className:'btn btn-ghost on-dark', href: telLink()}, 'Appeler')
+        )
+      )
+    ),
+
     React.createElement('section', {className:'about', id:'sd-about'},
       React.createElement('div', {className:'wrap about-grid'},
         React.createElement('div', null,
@@ -1325,10 +1432,9 @@ function Site(){
     React.createElement('footer', {className:'site-foot'},
       React.createElement('div', {className:'wrap foot-row'},
         React.createElement('div', {className:'foot-brand'},
-          React.createElement(Mark, {size:20}),
+          React.createElement('span', {onClick: () => setView('login'), style:{display:'inline-flex', padding:'10px', margin:'-10px', cursor:'default', WebkitTapHighlightColor:'transparent'}}, React.createElement(Mark, {size:20})),
           React.createElement('span', null, '© ' + new Date().getFullYear() + ' Serena Design')
-        ),
-        React.createElement('button', {className:'admin-link', onClick: () => setView('login')}, 'Admin')
+        )
       )
     )
   );
