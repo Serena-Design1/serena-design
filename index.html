@@ -362,6 +362,48 @@
       animation: none; opacity:1; transform:none;
     }
   }
+
+  /* ── Photo slider ── */
+  #serena-root .slider-wrap{position:relative;width:100%;height:100%}
+  #serena-root .slider-track{display:flex;width:100%;height:100%;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+  #serena-root .slider-track::-webkit-scrollbar{display:none}
+  #serena-root .slider-track img.slide{flex:0 0 100%;width:100%;height:100%;object-fit:cover;scroll-snap-align:center;scroll-snap-stop:always;transform:none!important}
+  #serena-root .modal-main-img .slider-track img.slide{object-fit:contain;background:#DED2AE}
+  #serena-root .slider-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;pointer-events:none}
+  #serena-root .slider-dots i{width:6px;height:6px;border-radius:50%;background:rgba(243,236,220,.6);box-shadow:0 0 0 1px rgba(23,18,14,.25);transition:width .25s,background .25s}
+  #serena-root .slider-dots i.on{width:18px;border-radius:3px;background:var(--or)}
+  #serena-root .slider-arrow{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:rgba(23,18,14,.62);color:var(--ivoire);font-size:22px;line-height:1;cursor:pointer;opacity:0;transition:opacity .2s}
+  #serena-root .slider-arrow.prev{left:8px}
+  #serena-root .slider-arrow.next{right:8px}
+  #serena-root .slider-wrap:hover .slider-arrow{opacity:1}
+  @media (hover:none){ #serena-root .slider-arrow{display:none} }
+  #serena-root .card .thumb .count-badge{display:none}
+
+  /* ── Hero: photos du catalogue en fondu ── */
+  #serena-root .hero-bg{position:absolute;inset:0;z-index:0}
+  #serena-root .hero-bg img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.6s ease}
+  #serena-root .hero-bg img.on{opacity:.45;animation:heroZoom 9s ease-out both}
+  #serena-root .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(23,18,14,.6),rgba(23,18,14,.3) 45%,var(--noir))}
+  @keyframes heroZoom{from{transform:scale(1.03)}to{transform:scale(1.11)}}
+
+  /* ── Barre d'actions mobile ── */
+  #serena-root .mobile-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:30;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(23,18,14,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line-dark)}
+  #serena-root .mobile-bar a{flex:1;display:flex;align-items:center;justify-content:center;min-height:46px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;font-weight:500}
+  #serena-root .mobile-bar .mb-wa{background:var(--or);color:var(--noir)}
+  #serena-root .mobile-bar .mb-call{border:1px solid var(--or);color:var(--ivoire)}
+  @keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+  @media (max-width:720px){
+    #serena-root{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+    #serena-root .mobile-bar{display:flex}
+    #serena-root .hero{min-height:calc(100svh - 70px);display:flex;align-items:center;padding:64px 0 56px}
+    #serena-root .hero h1{font-size:clamp(38px,11vw,52px);max-width:12ch}
+    #serena-root .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px 8px;width:calc(100% + 32px)}
+    #serena-root .filters::-webkit-scrollbar{display:none}
+    #serena-root .filters button{flex:0 0 auto;padding:11px 18px}
+    #serena-root .card .thumb{aspect-ratio:1/1}
+    #serena-root .modal-backdrop{display:flex;align-items:flex-end;justify-content:center}
+    #serena-root .modal-card{border-radius:20px 20px 0 0;animation:sheetUp .35s cubic-bezier(.2,.8,.2,1) both}
+  }
 </style>
 <!-- Meta Pixel Code -->
 <script>
@@ -393,6 +435,7 @@ src="https://www.facebook.com/tr?id=2140476850014281&ev=PageView&noscript=1"
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script>
 (function(){
   if (!document.querySelector('meta[name="viewport"]')) {
@@ -410,7 +453,7 @@ src="https://www.facebook.com/tr?id=2140476850014281&ev=PageView&noscript=1"
 const { useState, useEffect, useCallback, useRef } = React;
 
 const CATEGORIES = ["Chambre", "Poufs / Chaises", "Tables", "Meuble d'entrée", "Tableaux", "Autres"];
-const ADMIN_PASSWORD = "yeahbuddy"; // Mohamed: change this string to set your own admin password
+const NTFY_TOPIC = "serena-orders-329441dd536fe57c"; // notifications push sur ton téléphone (appli ntfy)
 const WHATSAPP_NUMBER = "21625134883";
 const PHONE_NUMBER = "25134883";
 function telLink(){ return "tel:" + PHONE_NUMBER; }
@@ -454,6 +497,16 @@ async function uploadToImgbb(file){
 }
 
 function uid(){ return 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+
+function notifyOwner(order){
+  try {
+    fetch('https://ntfy.sh/' + NTFY_TOPIC, {
+      method: 'POST',
+      headers: { 'Title': 'Nouvelle commande Serena Design', 'Priority': 'high', 'Tags': 'bell,shopping_cart', 'Click': 'https://serenadesign.tn' },
+      body: 'Nouvelle commande : ' + order.productName + '. Ouvre l\u2019espace admin pour voir les détails.'
+    }).catch(function(){});
+  } catch(e) {}
+}
 
 function waLink(productName){
   const text = encodeURIComponent("Bonjour Serena Design, je suis intéressé(e) par : " + productName);
@@ -571,7 +624,7 @@ function useOrders(){
   const addOrder = async (o) => {
     const order = {...o, id: uid(), createdAt: Date.now()};
     if (FIREBASE_READY) {
-      try { await getDb().collection('orders').doc(order.id).set(order); }
+      try { await getDb().collection('orders').doc(order.id).set(order); notifyOwner(order); }
       catch(e) { console.error('firestore add error', e); }
     } else {
       persistLocal([order, ...orders]);
@@ -677,6 +730,38 @@ function ImageCropper({ src, crop, onChange }){
   );
 }
 
+function Slider({ images, alt, crop, contain }){
+  const ref = useRef(null);
+  const [i, setI] = useState(0);
+  const onScroll = () => { const el = ref.current; if (el) setI(Math.round(el.scrollLeft / (el.clientWidth || 1))); };
+  const go = (n, e) => { e.stopPropagation(); const el = ref.current; if (el) el.scrollTo({ left: n * el.clientWidth, behavior: 'smooth' }); };
+  return React.createElement('div', {className:'slider-wrap'},
+    React.createElement('div', {className:'slider-track', ref, onScroll},
+      images.map((src, k) => React.createElement('img', {
+        key:k, src, className:'slide', alt: alt + (k ? ' ' + (k + 1) : ''), loading: k ? 'lazy' : 'eager', draggable:false,
+        style: contain ? { objectFit:'contain' } : (k === 0 && crop ? { objectPosition: (crop.x*100)+'% '+(crop.y*100)+'%' } : undefined)
+      }))
+    ),
+    i > 0 ? React.createElement('button', {className:'slider-arrow prev', 'aria-label':'Photo précédente', onClick: (e) => go(i - 1, e)}, '\u2039') : null,
+    i < images.length - 1 ? React.createElement('button', {className:'slider-arrow next', 'aria-label':'Photo suivante', onClick: (e) => go(i + 1, e)}, '\u203A') : null,
+    React.createElement('div', {className:'slider-dots'}, images.map((_, k) => React.createElement('i', {key:k, className: k === i ? 'on' : ''})))
+  );
+}
+
+function HeroBg({ images }){
+  const [i, setI] = useState(0);
+  const n = images.length;
+  useEffect(() => {
+    if (n < 2) return;
+    const t = setInterval(() => setI(v => (v + 1) % n), 5500);
+    return () => clearInterval(t);
+  }, [n]);
+  if (!n) return null;
+  return React.createElement('div', {className:'hero-bg', 'aria-hidden':'true'},
+    images.map((src, k) => React.createElement('img', {key:k, src, alt:'', className: k === i ? 'on' : '', loading: k ? 'lazy' : 'eager'}))
+  );
+}
+
 function ProductModal({ product, onClose, onBuy }){
   const images = getImages(product);
   const [idx, setIdx] = useState(0);
@@ -693,14 +778,9 @@ function ProductModal({ product, onClose, onBuy }){
       React.createElement('div', {className:'modal-media'},
         React.createElement('div', {className:'modal-main-img'},
           images.length
-            ? React.createElement('img', {src: images[idx], alt: product.name + ' - ' + product.category + ' Serena Design Tunisie'})
+            ? React.createElement(Slider, { images, alt: product.name + ' - ' + product.category + ' Serena Design Tunisie' })
             : React.createElement('span', {className:'empty'}, 'Photo à venir')
-        ),
-        images.length > 1 ? React.createElement('div', {className:'modal-thumbs'},
-          images.map((src, i) => React.createElement('img', {
-            key:i, src, className: i === idx ? 'active' : '', onClick: () => setIdx(i)
-          }))
-        ) : null
+        )
       ),
       React.createElement('div', {className:'modal-info'},
         React.createElement('span', {className:'cat-tag label-caps'}, product.category),
@@ -776,7 +856,9 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onOpen, onBuy, index 
   const images = getImages(product);
   return React.createElement('div', {className:'card', style:{animationDelay: (index*0.04)+'s'}},
     React.createElement('div', {className:'thumb' + (images.length ? '' : ' empty'), onClick: () => onOpen && onOpen(product)},
-      images.length
+      images.length > 1
+        ? React.createElement(Slider, { images, alt: product.name + ' - ' + product.category + ' Serena Design Tunisie', crop: product.crop, contain: product.fit === 'contain' })
+        : images.length
         ? React.createElement('img', {
             src: images[0], alt: product.name + ' - ' + product.category + ' Serena Design Tunisie',
             style: product.fit === 'contain'
@@ -1007,12 +1089,15 @@ function AdminPanel({ products, addProduct, updateProduct, deleteProduct, orders
 }
 
 function LoginBox({ onSuccess, onCancel }){
+  const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
-  const submit = (e) => {
-    e.preventDefault();
-    if (pw === ADMIN_PASSWORD) onSuccess();
-    else setErr('Mot de passe incorrect.');
+  const [busy, setBusy] = useState(false);
+  const submit = async (e) => {
+    e.preventDefault(); setBusy(true); setErr('');
+    try { getDb(); await firebase.auth().signInWithEmailAndPassword(email.trim(), pw); onSuccess(); }
+    catch(ex){ setErr('Email ou mot de passe incorrect.'); }
+    setBusy(false);
   };
   return React.createElement('div', {className:'wrap'},
     React.createElement('div', {className:'login-box'},
@@ -1021,9 +1106,10 @@ function LoginBox({ onSuccess, onCancel }){
       React.createElement('span', {className:'label-caps'}, 'Espace admin'),
       React.createElement('h2', {style:{marginTop:'10px', fontSize:'24px'}}, 'Connexion'),
       React.createElement('form', {onSubmit: submit},
-        React.createElement('input', {type:'password', placeholder:'Mot de passe', value:pw, onChange:e=>setPw(e.target.value), autoFocus:true}),
+        React.createElement('input', {type:'email', placeholder:'Email', autoComplete:'username', value:email, onChange:e=>setEmail(e.target.value), autoFocus:true}),
+        React.createElement('input', {type:'password', placeholder:'Mot de passe', autoComplete:'current-password', value:pw, onChange:e=>setPw(e.target.value)}),
         React.createElement('div', {style:{display:'flex', gap:'10px', justifyContent:'center'}},
-          React.createElement('button', {className:'btn', type:'submit'}, 'Entrer'),
+          React.createElement('button', {className:'btn', type:'submit', disabled:busy}, busy ? 'Connexion…' : 'Entrer'),
           React.createElement('button', {className:'btn btn-ghost', type:'button', onClick:onCancel}, 'Retour au site')
         ),
         err ? React.createElement('div', {className:'login-error'}, err) : null
@@ -1107,16 +1193,22 @@ function Site(){
   const [filter, setFilter] = useState('Tous');
   const [openProduct, setOpenProduct] = useState(null);
   const [buyProduct, setBuyProduct] = useState(null);
+  const [authed, setAuthed] = useState(false);
+  useEffect(() => { try { getDb(); return firebase.auth().onAuthStateChanged(u => setAuthed(!!u)); } catch(e) {} }, []);
 
   const filtered = filter === 'Tous' ? products : products.filter(p => p.category === filter);
 
-  if (view === 'login') return React.createElement(LoginBox, { onSuccess: () => setView('admin'), onCancel: () => setView('site') });
-    if (view === 'admin') return React.createElement(AdminPanel, { products, addProduct, updateProduct, deleteProduct, orders, ordersLoaded, onExit: () => setView('site') });
+  if (view === 'login' || (view === 'admin' && !authed)) return React.createElement(LoginBox, { onSuccess: () => setView('admin'), onCancel: () => setView('site') });
+  if (view === 'admin') return React.createElement(AdminPanel, { products, addProduct, updateProduct, deleteProduct, orders, ordersLoaded, onExit: () => { try { firebase.auth().signOut(); } catch(e) {} setView('site'); } });
 
   return React.createElement(React.Fragment, null,
         openProduct ? React.createElement(ProductModal, { product: openProduct, onClose: () => setOpenProduct(null), onBuy: (p) => { setOpenProduct(null); setBuyProduct(p); } }) : null,
     buyProduct ? React.createElement(OrderModal, { product: buyProduct, onClose: () => setBuyProduct(null), addOrder }) : null,
     React.createElement(SearchWidget, { products, onSelect: (p) => setOpenProduct(p) }),
+    React.createElement('div', {className:'mobile-bar'},
+      React.createElement('a', {className:'mb-wa', href: waLink('votre maison'), target:'_blank', rel:'noopener noreferrer'}, 'WhatsApp'),
+      React.createElement('a', {className:'mb-call', href: telLink()}, 'Appeler')
+    ),
 
     React.createElement('header', {className:'site-head'},
       React.createElement('div', {className:'wrap head-row'},
@@ -1153,6 +1245,7 @@ function Site(){
     ),
 
     React.createElement('section', {className:'hero'},
+      React.createElement(HeroBg, { images: products.map(pr => getImages(pr)[0]).filter(Boolean).slice(0, 5) }),
       React.createElement('div', {className:'hero-mark-watermark'}, React.createElement(Mark, {size: 260})),
       React.createElement('div', {className:'wrap hero-inner'},
         React.createElement(Mark, {size:52, className:'hero-mark-small'}),
