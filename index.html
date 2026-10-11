@@ -645,7 +645,7 @@ function useProducts(){
 
   return { products, loaded, addProduct, updateProduct, deleteProduct };
 }
-function useOrders(){
+function useOrders(authed){
   const [orders, setOrders] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -662,6 +662,7 @@ function useOrders(){
 
   useEffect(() => {
     if (FIREBASE_READY) {
+      if (!authed) { setOrders([]); setLoaded(true); return; }
       const unsub = getDb().collection('orders').onSnapshot((snap) => {
         const list = snap.docs.map(d => d.data());
         list.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
@@ -672,7 +673,7 @@ function useOrders(){
     } else {
       loadLocal();
     }
-  }, [loadLocal]);
+  }, [loadLocal, authed]);
 
   const persistLocal = async (list) => {
     setOrders(list);
@@ -1275,13 +1276,13 @@ function Site(){
     if (found) setOpenProduct(found);
   }
 }, [loaded, products]);
-  const { orders, loaded: ordersLoaded, addOrder } = useOrders();
+    const [authed, setAuthed] = useState(false);
+  useEffect(() => { try { getDb(); return firebase.auth().onAuthStateChanged(u => setAuthed(!!u)); } catch(e) {} }, []);
+  const { orders, loaded: ordersLoaded, addOrder } = useOrders(authed);
   const [view, setView] = useState('site'); // site | login | admin
   const [filter, setFilter] = useState('Tous');
   const [openProduct, setOpenProduct] = useState(null);
   const [buyProduct, setBuyProduct] = useState(null);
-  const [authed, setAuthed] = useState(false);
-  useEffect(() => { try { getDb(); return firebase.auth().onAuthStateChanged(u => setAuthed(!!u)); } catch(e) {} }, []);
 
   const filtered = filter === 'Tous' ? products : products.filter(p => p.category === filter);
 
