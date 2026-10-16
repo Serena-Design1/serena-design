@@ -225,7 +225,7 @@ Son grand miroir rond avec éclairage LED intégré offre une lumière douce et 
       
       <g:availability>in stock</g:availability>
       <g:condition>new</g:condition>
-      <g:price>950.00 TND</g:price>
+      <g:price>550.00 TND</g:price>
       <g:brand>Serena Design</g:brand>
       <g:product_type>Chambre</g:product_type>
     </item>
@@ -239,7 +239,7 @@ Son grand miroir rond avec éclairage LED intégré offre une lumière douce et 
       
       <g:availability>in stock</g:availability>
       <g:condition>new</g:condition>
-      <g:price>950.00 TND</g:price>
+      <g:price>550.00 TND</g:price>
       <g:brand>Serena Design</g:brand>
       <g:product_type>Meuble d&apos;entrée</g:product_type>
     </item>
@@ -301,9 +301,23 @@ Pièce maîtresse moderne et élégante, idéale comme assise centrale ou table 
       <g:additional_image_link>https://i.ibb.co/7NtTBvcd/IMG-5315.jpg</g:additional_image_link>
       <g:availability>in stock</g:availability>
       <g:condition>new</g:condition>
-      <g:price>390.00 TND</g:price>
+      <g:price>450.00 TND</g:price>
       <g:brand>Serena Design</g:brand>
       <g:product_type>Chambre</g:product_type>
+    </item>
+
+    <item>
+      <g:id>p_1792181406587_0vdrij</g:id>
+      <title>Meuble d’entrée Loria  </title>
+      <description>Meuble d’entrée élégant au design minimaliste, pour une touche de luxe et de modernité à votre intérieur.  (1m*80cm)</description>
+      <link>https://serenadesign.tn/?p=p_1792181406587_0vdrij</link>
+      <g:image_link>https://i.ibb.co/nqpxs9d6/536a32ad7affc9ebac27519b25687ec1.jpg</g:image_link>
+      
+      <g:availability>in stock</g:availability>
+      <g:condition>new</g:condition>
+      <g:price>650.00 TND</g:price>
+      <g:brand>Serena Design</g:brand>
+      <g:product_type>Meuble d&apos;entrée</g:product_type>
     </item>
 </channel>
 </rss>
